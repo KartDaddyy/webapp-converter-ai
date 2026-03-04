@@ -87,11 +87,11 @@ export default function AICommandBox({ project, onCommand }) {
                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-xs font-semibold text-emerald-300">{result.feature_name}</span>
               </div>
-              <p className="text-xs text-white/50 leading-relaxed mb-2">{result.description}</p>
+              <p className="text-xs text-slate-600 leading-relaxed mb-2">{result.description}</p>
               {result.packages_needed?.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {result.packages_needed.map((pkg, i) => (
-                    <span key={i} className="text-[10px] font-mono bg-black/20 text-emerald-300/60 px-1.5 py-0.5 rounded">
+                    <span key={i} className="text-[10px] font-mono bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">
                       {pkg}
                     </span>
                   ))}
