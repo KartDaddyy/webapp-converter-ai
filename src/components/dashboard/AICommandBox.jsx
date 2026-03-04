@@ -104,14 +104,14 @@ export default function AICommandBox({ project, onCommand }) {
         {/* History */}
         {history.length > 0 && (
           <div className="px-4 mb-4">
-            <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">History</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-2">History</p>
             <div className="space-y-1.5">
               {history.map((h, i) => (
-                <div key={i} className="flex items-start gap-2 py-2 px-3 bg-white/[0.02] border border-white/[0.05] rounded-lg">
+                <div key={i} className="flex items-start gap-2 py-2 px-3 bg-slate-50 border border-slate-100 rounded-lg">
                   <ChevronRight className="w-3 h-3 text-violet-400 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-[11px] text-white/60 truncate">{h.cmd}</p>
-                    <p className="text-[10px] text-white/25">{h.result?.feature_name}</p>
+                    <p className="text-[11px] text-slate-600 truncate">{h.cmd}</p>
+                    <p className="text-[10px] text-slate-400">{h.result?.feature_name}</p>
                   </div>
                 </div>
               ))}
