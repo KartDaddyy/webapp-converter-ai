@@ -148,17 +148,17 @@ Generate the complete file now:`,
     runAnalysis();
   }, [project?.id, project?.status]);
 
-  // Handle AI commands
+  // Handle AI commands — updates Flutter code with the new feature
   const handleCommand = async (command) => {
     setIsCommandProcessing(true);
 
-    const result = await base44.integrations.Core.InvokeLLM({
+    // Step 1: Determine feature details
+    const featureResult = await base44.integrations.Core.InvokeLLM({
       prompt: `You are an AI assistant for a mobile app generator. The user wants to add this feature to their Flutter app:
 
 Command: "${command}"
 
 Current app: ${project?.analysis?.siteName || project?.url}
-Current features: ${JSON.stringify(project?.features || [])}
 
 Respond with:
 1. A short feature name
@@ -174,22 +174,45 @@ Respond with:
       }
     });
 
+    // Step 2: Update the Flutter code to include the feature
+    const codeResult = await base44.integrations.Core.InvokeLLM({
+      prompt: `You are an expert Flutter developer. Update the following Flutter main.dart code to add this feature: "${command}"
+
+Feature details: ${featureResult.description}
+
+CURRENT CODE:
+${project.flutter_code || "// No code yet"}
+
+REQUIREMENTS:
+- Add the feature in a realistic way using only flutter/material.dart (no external packages unless absolutely necessary for the feature)
+- Keep all existing screens and functionality intact
+- If the feature requires a new screen or dialog, add it
+- Return ONLY valid Dart code with NO markdown, NO \`\`\`, NO explanations — just the raw .dart file content`,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          code: { type: "string" }
+        }
+      }
+    });
+
     const updatedFeatures = [
       ...(project.features || []),
       {
-        name: result.feature_name,
+        name: featureResult.feature_name,
         status: "added",
         added_at: new Date().toISOString()
       }
     ];
 
     await base44.entities.Project.update(project.id, {
-      features: updatedFeatures
+      features: updatedFeatures,
+      flutter_code: codeResult.code
     });
 
     await loadProject();
     setIsCommandProcessing(false);
-    return result;
+    return featureResult;
   };
 
   // Handle build — simulates build progress only (download handled in BuildPanel)
