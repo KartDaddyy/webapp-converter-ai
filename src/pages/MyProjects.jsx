@@ -113,7 +113,19 @@ export default function MyProjects() {
                         </p>
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => handleDelete(e, project.id)}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all"
+                        disabled={deletingId === project.id}
+                      >
+                        {deletingId === project.id
+                          ? <div className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+                          : <Trash2 className="w-4 h-4" />
+                        }
+                      </button>
+                      <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2 flex-wrap">
