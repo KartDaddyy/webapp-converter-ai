@@ -162,15 +162,14 @@ Current features: ${JSON.stringify(project?.features || [])}
 
 Respond with:
 1. A short feature name
-2. What Flutter packages/code changes would be needed
-3. Updated status`,
+2. A description of what will be added
+3. What Flutter packages would be needed`,
       response_json_schema: {
         type: "object",
         properties: {
-          featureName: { type: "string" },
+          feature_name: { type: "string" },
           description: { type: "string" },
-          packages: { type: "array", items: { type: "string" } },
-          status: { type: "string" }
+          packages_needed: { type: "array", items: { type: "string" } }
         }
       }
     });
@@ -178,7 +177,7 @@ Respond with:
     const updatedFeatures = [
       ...(project.features || []),
       {
-        name: result.featureName,
+        name: result.feature_name,
         status: "added",
         added_at: new Date().toISOString()
       }
@@ -190,6 +189,7 @@ Respond with:
 
     await loadProject();
     setIsCommandProcessing(false);
+    return result;
   };
 
   // Handle build — simulates build progress only (download handled in BuildPanel)
