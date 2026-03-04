@@ -298,9 +298,8 @@ Respond with:
                 </div>
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                   <AICommandBox
+                    project={project}
                     onCommand={handleCommand}
-                    isProcessing={isCommandProcessing}
-                    features={project.features || []}
                   />
                 </div>
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
