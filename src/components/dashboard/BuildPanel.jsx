@@ -137,7 +137,7 @@ export default function BuildPanel({ project, onBuild }) {
       {/* Build note */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
         <p className="text-xs text-amber-700 leading-relaxed">
-          <span className="font-semibold text-amber-800">Note:</span> APK/AAB builds are simulated in this environment. Download the Flutter Source Code and run <span className="font-mono bg-amber-100 px-1 rounded">flutter build apk</span> locally to generate real builds.
+          <span className="font-semibold text-amber-800">How to install on Android:</span> Click "Build Now" to download your Flutter project. Then run <span className="font-mono bg-amber-100 px-1 rounded">flutter build apk --release</span> locally and install the APK on your device. See the included README for full instructions.
         </p>
       </div>
     </div>
