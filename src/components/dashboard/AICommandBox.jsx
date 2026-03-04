@@ -121,9 +121,9 @@ export default function AICommandBox({ project, onCommand }) {
       </div>
 
       {/* Input */}
-      <div className="px-4 py-4 border-t border-white/[0.06]">
+      <div className="px-4 py-4 border-t border-slate-100">
         {isDisabled && (
-          <p className="text-[10px] text-white/25 text-center mb-2">
+          <p className="text-[10px] text-slate-400 text-center mb-2">
             Waiting for analysis to complete...
           </p>
         )}
@@ -140,7 +140,7 @@ export default function AICommandBox({ project, onCommand }) {
             placeholder={isDisabled ? "Analyzing..." : "e.g. Add Google login with Firebase..."}
             disabled={isDisabled || loading}
             rows={3}
-            className="resize-none bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 text-xs rounded-xl focus-visible:ring-violet-500/40 pr-12 disabled:opacity-40"
+            className="resize-none text-xs rounded-xl focus-visible:ring-violet-500/40 pr-12 disabled:opacity-40"
           />
           <Button
             onClick={handleSubmit}
