@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import AnalysisPanel from "@/components/dashboard/AnalysisPanel";
-import PreviewPanel from "@/components/dashboard/PreviewPanel";
-import CodePanel from "@/components/dashboard/CodePanel";
-import BuildPanel from "@/components/dashboard/BuildPanel";
-import AICommandBox from "@/components/dashboard/AICommandBox";
-import ProjectHeader from "@/components/dashboard/ProjectHeader";
+import AnalysisPanel from "@/components/dashboard/AnalysisPanel.jsx";
+import PreviewPanel from "@/components/dashboard/PreviewPanel.jsx";
+import CodePanel from "@/components/dashboard/CodePanel.jsx";
+import BuildPanel from "@/components/dashboard/BuildPanel.jsx";
+import AICommandBox from "@/components/dashboard/AICommandBox.jsx";
+import ProjectHeader from "@/components/dashboard/ProjectHeader.jsx";
 
 export default function Dashboard() {
   const [project, setProject] = useState(null);
