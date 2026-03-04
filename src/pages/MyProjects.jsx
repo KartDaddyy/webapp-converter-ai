@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Globe, Smartphone, ArrowRight, Clock, Layers } from "lucide-react";
+import { Plus, Globe, Smartphone, ArrowRight, Clock, Layers, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 const statusConfig = {
