@@ -117,7 +117,7 @@ export default function BuildPanel({ project, onBuild }) {
                   disabled={isBuilding || project.status === "analyzing"}
                   size="sm"
                   variant="outline"
-                  className="w-full border-white/10 text-white/50 hover:text-white hover:bg-white/5 text-xs"
+                  className="w-full text-xs"
                 >
                   {isBuilding ? (
                     <>
