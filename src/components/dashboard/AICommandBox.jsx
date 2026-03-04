@@ -1,122 +1,162 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Sparkles, Send, Zap, Shield, CreditCard, Paintbrush, Bell, Moon, RefreshCw, Loader2, CheckCircle2, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Zap, Send, Loader2, ChevronRight, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-const SUGGESTED_COMMANDS = [
-  { label: "Push Notifications", icon: Bell, command: "Add Firebase push notifications" },
-  { label: "Google Login", icon: Shield, command: "Add Google login" },
-  { label: "Dark Mode", icon: Moon, command: "Add dark mode" },
-  { label: "AdMob Ads", icon: CreditCard, command: "Add AdMob ads" },
-  { label: "Offline Cache", icon: RefreshCw, command: "Add offline caching" },
-  { label: "Splash Screen", icon: Paintbrush, command: "Add splash screen customization" },
+const QUICK_COMMANDS = [
+  "Add Firebase push notifications",
+  "Add Google login",
+  "Add dark mode",
+  "Add offline caching",
+  "Add AdMob ads",
+  "Add pull to refresh",
+  "Add loading animations",
+  "Add Apple login",
+  "Add OTP login",
+  "Add in-app purchases",
 ];
 
-export default function AICommandBox({ onCommand, isProcessing, features = [] }) {
+export default function AICommandBox({ project, onCommand }) {
   const [command, setCommand] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (command.trim() && !isProcessing) {
-      onCommand(command.trim());
-      setCommand("");
+  const handleSubmit = async () => {
+    if (!command.trim() || loading || !project) return;
+    const cmd = command.trim();
+    setLoading(true);
+    setResult(null);
+    setCommand("");
+    try {
+      const res = await onCommand(cmd);
+      setResult(res);
+      setHistory(prev => [{ cmd, result: res, time: new Date() }, ...prev.slice(0, 9)]);
+    } catch (e) {
+      console.error(e);
     }
+    setLoading(false);
   };
 
-  const handleSuggestion = (cmd) => {
-    if (!isProcessing) {
-      onCommand(cmd);
-    }
-  };
+  const isDisabled = project?.status === "analyzing" || !project?.analysis;
 
   return (
-    <div className="space-y-5">
-      <div>
-        <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-1">
-          <Sparkles className="w-4 h-4 text-violet-500" />
-          AI Feature Commands
-        </h3>
-        <p className="text-sm text-slate-500">Type a command or choose a suggestion to add features</p>
-      </div>
-
-      {/* Command input */}
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <div className="relative flex-1">
-          <Zap className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            value={command}
-            onChange={(e) => setCommand(e.target.value)}
-            placeholder='e.g. "Add Firebase push notifications"'
-            className="pl-10 h-11 rounded-xl border-slate-200 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400"
-            disabled={isProcessing}
-          />
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+            <Zap className="w-3 h-3 text-white" />
+          </div>
+          <span className="text-sm font-semibold text-white">AI Feature Commands</span>
         </div>
-        <Button
-          type="submit"
-          disabled={isProcessing || !command.trim()}
-          className="h-11 px-5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-lg shadow-violet-500/20"
-        >
-          {isProcessing ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Send className="w-4 h-4" />
-          )}
-        </Button>
-      </form>
-
-      {/* Suggestions */}
-      <div className="flex flex-wrap gap-2">
-        {SUGGESTED_COMMANDS.map((item) => {
-          const isAdded = features.some(f => f.name?.toLowerCase().includes(item.label.toLowerCase()));
-          return (
-            <button
-              key={item.label}
-              onClick={() => !isAdded && handleSuggestion(item.command)}
-              disabled={isProcessing || isAdded}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                isAdded
-                  ? "bg-emerald-50 border-emerald-200 text-emerald-600 cursor-default"
-                  : "bg-white border-slate-200 text-slate-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
-              }`}
-            >
-              {isAdded ? <CheckCircle2 className="w-3 h-3" /> : <item.icon className="w-3 h-3" />}
-              {item.label}
-            </button>
-          );
-        })}
+        <p className="text-xs text-white/30 leading-relaxed">
+          Describe a feature in plain English — AI will add it to your app automatically.
+        </p>
       </div>
 
-      {/* Added features */}
-      <AnimatePresence>
-        {features.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="space-y-2"
-          >
-            <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Added Features</p>
+      <div className="flex-1 overflow-y-auto">
+        {/* Quick commands */}
+        <div className="px-4 py-4">
+          <p className="text-[10px] text-white/25 uppercase tracking-widest mb-3">Quick Commands</p>
+          <div className="flex flex-wrap gap-1.5">
+            {QUICK_COMMANDS.map((cmd, i) => (
+              <button
+                key={i}
+                onClick={() => setCommand(cmd)}
+                disabled={isDisabled || loading}
+                className="px-2.5 py-1 bg-white/[0.04] hover:bg-violet-500/15 border border-white/[0.08] hover:border-violet-500/30 rounded-full text-[10px] text-white/40 hover:text-violet-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {cmd}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Result */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mx-4 mb-4 p-4 bg-emerald-500/[0.06] border border-emerald-500/20 rounded-xl"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-xs font-semibold text-emerald-300">{result.feature_name}</span>
+              </div>
+              <p className="text-xs text-white/50 leading-relaxed mb-2">{result.description}</p>
+              {result.packages_needed?.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {result.packages_needed.map((pkg, i) => (
+                    <span key={i} className="text-[10px] font-mono bg-black/20 text-emerald-300/60 px-1.5 py-0.5 rounded">
+                      {pkg}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* History */}
+        {history.length > 0 && (
+          <div className="px-4 mb-4">
+            <p className="text-[10px] text-white/25 uppercase tracking-widest mb-2">History</p>
             <div className="space-y-1.5">
-              {features.map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span className="text-xs text-slate-700 flex-1">{feature.name}</span>
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                    {feature.status || "added"}
-                  </Badge>
-                </motion.div>
+              {history.map((h, i) => (
+                <div key={i} className="flex items-start gap-2 py-2 px-3 bg-white/[0.02] border border-white/[0.05] rounded-lg">
+                  <ChevronRight className="w-3 h-3 text-violet-400 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[11px] text-white/60 truncate">{h.cmd}</p>
+                    <p className="text-[10px] text-white/25">{h.result?.feature_name}</p>
+                  </div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
+
+      {/* Input */}
+      <div className="px-4 py-4 border-t border-white/[0.06]">
+        {isDisabled && (
+          <p className="text-[10px] text-white/25 text-center mb-2">
+            Waiting for analysis to complete...
+          </p>
+        )}
+        <div className="relative">
+          <Textarea
+            value={command}
+            onChange={e => setCommand(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            placeholder={isDisabled ? "Analyzing..." : "e.g. Add Google login with Firebase..."}
+            disabled={isDisabled || loading}
+            rows={3}
+            className="resize-none bg-white/[0.04] border-white/[0.08] text-white placeholder:text-white/20 text-xs rounded-xl focus-visible:ring-violet-500/40 pr-12 disabled:opacity-40"
+          />
+          <Button
+            onClick={handleSubmit}
+            disabled={!command.trim() || loading || isDisabled}
+            size="icon"
+            className="absolute bottom-2.5 right-2.5 w-7 h-7 bg-violet-600 hover:bg-violet-500 disabled:opacity-30 rounded-lg"
+          >
+            {loading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Send className="w-3.5 h-3.5" />
+            )}
+          </Button>
+        </div>
+        <p className="text-[10px] text-white/20 mt-1.5">Enter to send · Shift+Enter for new line</p>
+      </div>
     </div>
   );
 }
