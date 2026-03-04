@@ -44,14 +44,14 @@ export default function AICommandBox({ project, onCommand }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-5 py-4 border-b border-white/[0.06]">
+      <div className="px-5 py-4 border-b border-slate-100">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
             <Zap className="w-3 h-3 text-white" />
           </div>
-          <span className="text-sm font-semibold text-white">AI Feature Commands</span>
+          <span className="text-sm font-semibold text-slate-900">AI Feature Commands</span>
         </div>
-        <p className="text-xs text-white/30 leading-relaxed">
+        <p className="text-xs text-slate-500 leading-relaxed">
           Describe a feature in plain English — AI will add it to your app automatically.
         </p>
       </div>
