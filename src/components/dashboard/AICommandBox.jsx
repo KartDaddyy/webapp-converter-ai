@@ -59,14 +59,14 @@ export default function AICommandBox({ project, onCommand }) {
       <div className="flex-1 overflow-y-auto">
         {/* Quick commands */}
         <div className="px-4 py-4">
-          <p className="text-[10px] text-white/25 uppercase tracking-widest mb-3">Quick Commands</p>
+          <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-3">Quick Commands</p>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_COMMANDS.map((cmd, i) => (
               <button
                 key={i}
                 onClick={() => setCommand(cmd)}
                 disabled={isDisabled || loading}
-                className="px-2.5 py-1 bg-white/[0.04] hover:bg-violet-500/15 border border-white/[0.08] hover:border-violet-500/30 rounded-full text-[10px] text-white/40 hover:text-violet-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-violet-100 border border-slate-200 hover:border-violet-300 rounded-full text-[10px] text-slate-500 hover:text-violet-600 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {cmd}
               </button>
