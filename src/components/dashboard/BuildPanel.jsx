@@ -62,8 +62,8 @@ export default function BuildPanel({ project, onBuild }) {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h2 className="text-base font-semibold text-white mb-1">Build & Download</h2>
-        <p className="text-sm text-white/30">Compile your app for distribution or development</p>
+        <h2 className="text-base font-semibold text-slate-900 mb-1">Build & Download</h2>
+        <p className="text-sm text-slate-500">Compile your app for distribution or development</p>
       </div>
 
       {/* Build cards */}
