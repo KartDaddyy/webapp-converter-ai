@@ -76,7 +76,7 @@ export default function BuildPanel({ project, onBuild }) {
           return (
             <div
               key={bt.id}
-              className="bg-white/[0.03] border border-white/[0.07] rounded-2xl p-5 hover:bg-white/[0.05] transition-colors"
+              className="bg-slate-50 border border-slate-100 rounded-2xl p-5 hover:bg-slate-100 transition-colors"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${bt.color} flex items-center justify-center shadow-lg ${bt.glow}`}>
