@@ -20,11 +20,21 @@ const statusConfig = {
 
 export default function MyProjects() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [deletingId, setDeletingId] = useState(null);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: () => base44.entities.Project.list("-created_date", 50),
   });
+
+  const handleDelete = async (e, projectId) => {
+    e.stopPropagation();
+    setDeletingId(projectId);
+    await base44.entities.Project.delete(projectId);
+    queryClient.invalidateQueries({ queryKey: ["projects"] });
+    setDeletingId(null);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
