@@ -92,24 +92,34 @@ Be creative and realistic based on the URL/domain.`,
       });
 
       // Generate Flutter code
+      const screenNames = (result.screens || []).map(s => s.name).join(", ");
+      const primaryColor = (result.colors?.[0] || "#3b82f6").replace("#", "0xFF");
+      const secondaryColor = (result.colors?.[1] || "#8b5cf6").replace("#", "0xFF");
+
       const codeResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate a complete Flutter main.dart file for a mobile app converting the website "${project.url}".
+        prompt: `You are an expert Flutter developer. Generate a complete, syntactically correct Flutter main.dart file for a mobile app based on this website: "${project.url}"
 
-Site name: ${result.siteName}
-Screens: ${JSON.stringify(result.screens)}
-Nav items: ${JSON.stringify(result.navItems)}
-Colors: ${JSON.stringify(result.colors)}
+Website name: ${result.siteName}
+Description: ${result.description}
+Navigation items: ${JSON.stringify(result.navItems || [])}
+Screens to create: ${screenNames}
+Primary color hex: ${result.colors?.[0] || "#3b82f6"}
+Secondary color hex: ${result.colors?.[1] || "#8b5cf6"}
 
-Generate a complete, compilable Flutter app with:
-- MaterialApp with theme using the extracted colors
-- Bottom navigation bar
-- Drawer menu
-- Home screen with cards/lists
-- Proper routing
-- Splash screen
-- Modern Material 3 design
+STRICT REQUIREMENTS - follow exactly:
+1. Start with: import 'package:flutter/material.dart';
+2. The main() function must be: void main() { runApp(const MyApp()); }
+3. MyApp must be a StatelessWidget returning MaterialApp
+4. Use MaterialApp with theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Color(${primaryColor})), useMaterial3: true)
+5. Create a MainScreen StatefulWidget with BottomNavigationBar
+6. Create ${Math.min((result.screens || []).length, 4)} screen widgets as separate StatelessWidget classes
+7. Each screen should have a Scaffold with AppBar and a ListView or Column with realistic placeholder content (Cards, ListTiles, etc.) that matches what that screen would show
+8. The app title should be: "${result.siteName}"
+9. Use proper Dart syntax: no trailing commas errors, all brackets matched, all classes properly closed
+10. Do NOT use any external packages - only flutter/material.dart
+11. Return ONLY valid Dart code with NO markdown, NO \`\`\`, NO explanations - just the raw .dart file content starting with "import 'package:flutter/material.dart';"
 
-Return ONLY the dart code, no markdown.`,
+Generate the complete file now:`,
         response_json_schema: {
           type: "object",
           properties: {
