@@ -155,7 +155,7 @@ export default function AICommandBox({ project, onCommand }) {
             )}
           </Button>
         </div>
-        <p className="text-[10px] text-white/20 mt-1.5">Enter to send · Shift+Enter for new line</p>
+        <p className="text-[10px] text-slate-400 mt-1.5">Enter to send · Shift+Enter for new line</p>
       </div>
     </div>
   );
