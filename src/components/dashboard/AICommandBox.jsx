@@ -29,13 +29,9 @@ export default function AICommandBox({ project, onCommand }) {
     setLoading(true);
     setResult(null);
     setCommand("");
-    try {
-      const res = await onCommand(cmd);
-      setResult(res);
-      setHistory(prev => [{ cmd, result: res, time: new Date() }, ...prev.slice(0, 9)]);
-    } catch (e) {
-      console.error(e);
-    }
+    const res = await onCommand(cmd);
+    setResult(res);
+    setHistory(prev => [{ cmd, result: res, time: new Date() }, ...prev.slice(0, 9)]);
     setLoading(false);
   };
 
