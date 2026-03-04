@@ -192,41 +192,47 @@ Respond with:
     setIsCommandProcessing(false);
   };
 
-  // Handle build
-  const handleBuild = async () => {
+  // Handle build — simulates build then auto-downloads the Flutter source
+  const handleBuild = async (buildType) => {
     setIsBuilding(true);
 
+    const currentBuildStatus = { ...(project.build_status || {}) };
+    currentBuildStatus[buildType] = "building";
     await base44.entities.Project.update(project.id, {
-      build_status: {
-        apk: "building",
-        aab: "building",
-        ios: "building",
-        source: "building"
-      }
+      build_status: currentBuildStatus,
+      status: "building"
     });
     await loadProject();
 
-    // Simulate build steps
-    const buildSteps = ["apk", "aab", "ios", "source"];
-    for (const step of buildSteps) {
-      await new Promise(r => setTimeout(r, 2000 + Math.random() * 1500));
-      const currentStatus = { ...(project.build_status || {}) };
-      currentStatus[step] = "completed";
-      for (const next of buildSteps) {
-        if (!currentStatus[next]) currentStatus[next] = "building";
-      }
-      await base44.entities.Project.update(project.id, {
-        build_status: currentStatus,
-        status: "building"
-      });
-      await loadProject();
-    }
+    // Simulate build time
+    await new Promise(r => setTimeout(r, 2500 + Math.random() * 1500));
 
+    // Mark as ready
+    currentBuildStatus[buildType] = "ready";
     await base44.entities.Project.update(project.id, {
-      status: "completed",
-      build_status: { apk: "completed", aab: "completed", ios: "completed", source: "completed" }
+      build_status: currentBuildStatus,
+      status: "preview"
     });
     await loadProject();
+
+    // Auto-download the Flutter source as the "built" artifact
+    const code = project.flutter_code || "// No code generated yet";
+    const appName = project.analysis?.siteName || project.name || "app";
+    const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
+    const extMap = { apk: "dart", aab: "dart", ios: "dart", source: "dart" };
+    const labelMap = { apk: "android_apk", aab: "android_aab", ios: "ios", source: "source" };
+
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${safeAppName}_flutter_${labelMap[buildType]}.${extMap[buildType]}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
     setIsBuilding(false);
   };
 
