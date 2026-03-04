@@ -90,9 +90,9 @@ export default function BuildPanel({ project, onBuild }) {
                 )}
               </div>
 
-              <p className="text-sm font-semibold text-white mb-1">{bt.label}</p>
-              <p className="text-xs text-white/30 mb-1">{bt.desc}</p>
-              <p className="text-[10px] text-white/20 font-mono mb-4">{bt.cmd}</p>
+              <p className="text-sm font-semibold text-slate-900 mb-1">{bt.label}</p>
+              <p className="text-xs text-slate-500 mb-1">{bt.desc}</p>
+              <p className="text-[10px] text-slate-400 font-mono mb-4">{bt.cmd}</p>
 
               {bt.id === "source" ? (
                 <Button
