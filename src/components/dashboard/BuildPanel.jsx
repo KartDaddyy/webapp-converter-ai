@@ -185,7 +185,7 @@ Upload this project to https://flutlab.io to build in the browser.
   zip.folder(".github").folder("workflows").file("flutter-build.yml", githubWorkflow);
   zip.folder("android").folder("app").folder("src").folder("main").file("AndroidManifest.xml", androidManifest);
 
-  return { zip, safeAppName, appName };
+  return { zip, safeAppName, appName, folder: zip };
 }
 
 export default function BuildPanel({ project, onBuild, isBuilding }) {
