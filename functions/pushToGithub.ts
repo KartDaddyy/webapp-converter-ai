@@ -30,29 +30,34 @@ function buildFlutterFiles(appName, safeAppName, code, pubspec) {
     </application>
 </manifest>`;
 
-  const buildGradle = `def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
+  const buildGradle = `plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
 }
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-
-apply plugin: 'com.android.application'
-apply from: "\$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.example.${safeAppName}"
-    compileSdkVersion 34
+    compileSdk 34
+    ndkVersion "27.0.12077973"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
     defaultConfig {
         applicationId "com.example.${safeAppName}"
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.debug
@@ -61,49 +66,39 @@ android {
 }
 
 flutter {
-    source '../..'
+    source "../.."
 }`;
 
-  const rootBuildGradle = `buildscript {
+  const rootBuildGradle = `plugins {
+    id "com.android.application" version "8.1.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
+}`;
+
+  const gradleSettings = `pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file("local.properties").withInputStream { properties.load(it) }
+        def flutterSdkPath = properties.getProperty("flutter.sdk")
+        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+        return flutterSdkPath
+    }()
+
+    includeBuild("\${flutterSdkPath}/packages/flutter_tools/gradle")
+
     repositories {
         google()
         mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
+        gradlePluginPortal()
     }
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
+plugins {
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    id "com.android.application" version "8.1.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
 }
 
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "\${rootProject.buildDir}/\${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
-}
-
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}`;
-
-  const gradleSettings = `include ':app'
-
-def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
-def properties = new Properties()
-
-assert localPropertiesFile.exists()
-localPropertiesFile.withReader("UTF-8") { reader -> properties.load(reader) }
-
-def flutterSdkPath = properties.getProperty("flutter.sdk")
-assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-apply from: "\$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"`;
+include ":app"`;
 
   const mainActivity = `package com.example.${safeAppName}
 
