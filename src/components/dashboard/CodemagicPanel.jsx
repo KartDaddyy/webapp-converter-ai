@@ -101,37 +101,6 @@ export default function CodemagicPanel({ project }) {
     setPushSuccess(false);
     setError(null);
 
-    const appName = project.analysis?.siteName || project.name || "app";
-    const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-    const code = project.flutter_code;
-
-    const pubspec = `name: ${safeAppName}
-description: Generated Flutter app from ${project.url}
-publish_to: 'none'
-version: 1.0.0+1
-
-environment:
-  sdk: '>=3.0.0 <4.0.0'
-
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^2.0.0
-
-flutter:
-  uses-material-design: true
-`;
-
-    const files = [
-      { path: "lib/main.dart", content: code },
-      { path: "pubspec.yaml", content: pubspec },
-    ];
-
     // Detect owner/repo from selected app's repository URL
     let owner = "KartDaddyy";
     let repo = "webapp-converter-ai";
@@ -140,7 +109,7 @@ flutter:
       if (match) { owner = match[1]; repo = match[2]; }
     }
 
-    const res = await base44.functions.invoke("pushToGithub", { owner, repo, files });
+    const res = await base44.functions.invoke("pushToGithub", { owner, repo, project });
     if (res.data?.success) {
       setPushSuccess(true);
     } else {
