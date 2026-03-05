@@ -118,6 +118,24 @@ org.gradle.daemon=true
 org.gradle.parallel=true
 org.gradle.caching=true`;
 
+  const stylesXml = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+</resources>`;
+
+  const colorsXml = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="launch_background">#FFFFFF</color>
+</resources>`;
+
+  // 1x1 white PNG as base64 for ic_launcher placeholder
+  const iconBase64 = `iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABMSURBVHgB7cExAQAAAMKg9U9tCy+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMBuAABHgAAAABJRU5ErkJggg==`;
+
   const mainActivity = `package com.example.${safeAppName}
 
 import io.flutter.embedding.android.FlutterActivity
