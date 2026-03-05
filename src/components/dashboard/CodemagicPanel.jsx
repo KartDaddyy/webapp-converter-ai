@@ -92,6 +92,63 @@ export default function CodemagicPanel({ project }) {
     setTriggering(false);
   };
 
+  const pushToGitHub = async () => {
+    if (!project?.flutter_code) {
+      setError("No Flutter code generated yet.");
+      return;
+    }
+    setPushing(true);
+    setPushSuccess(false);
+    setError(null);
+
+    const appName = project.analysis?.siteName || project.name || "app";
+    const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+    const code = project.flutter_code;
+
+    const pubspec = `name: ${safeAppName}
+description: Generated Flutter app from ${project.url}
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+`;
+
+    const files = [
+      { path: "lib/main.dart", content: code },
+      { path: "pubspec.yaml", content: pubspec },
+    ];
+
+    // Detect owner/repo from selected app's repository URL
+    let owner = "KartDaddyy";
+    let repo = "webapp-converter-ai";
+    if (selectedApp?.repository?.htmlUrl) {
+      const match = selectedApp.repository.htmlUrl.match(/github\.com\/([^/]+)\/([^/.]+)/);
+      if (match) { owner = match[1]; repo = match[2]; }
+    }
+
+    const res = await base44.functions.invoke("pushToGithub", { owner, repo, files });
+    if (res.data?.success) {
+      setPushSuccess(true);
+    } else {
+      setError(res.data?.error || "Failed to push to GitHub.");
+    }
+    setPushing(false);
+  };
+
   const getPublicUrl = async (artifactUrl) => {
     const res = await base44.functions.invoke("codemagicBuild", { action: "publicUrl", artifactUrl });
     if (res.data?.url) {
