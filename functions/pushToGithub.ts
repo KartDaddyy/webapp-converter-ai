@@ -71,7 +71,7 @@ flutter {
 
   const rootBuildGradle = `plugins {
     id "com.android.application" version "8.1.0" apply false
-    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.9.10" apply false
 }`;
 
   const gradleSettings = `pluginManagement {
@@ -95,10 +95,16 @@ flutter {
 plugins {
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
     id "com.android.application" version "8.1.0" apply false
-    id "org.jetbrains.kotlin.android" version "1.8.0" apply false
+    id "org.jetbrains.kotlin.android" version "1.9.10" apply false
 }
 
 include ":app"`;
+
+  const gradleWrapper = `distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\\://services.gradle.org/distributions/gradle-8.3-bin.zip`;
 
   const mainActivity = `package com.example.${safeAppName}
 
