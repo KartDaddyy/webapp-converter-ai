@@ -446,6 +446,7 @@ NS_ASSUME_NONNULL_END
     { path: "android/app/build.gradle", content: buildGradle },
     { path: "android/build.gradle", content: rootBuildGradle },
     { path: "android/settings.gradle", content: gradleSettings },
+    { path: "android/gradle/wrapper/gradle-wrapper.properties", content: gradleWrapper },
     { path: "android/app/src/main/kotlin/com/example/${safeAppName}/MainActivity.kt", content: mainActivity },
     { path: "ios/Runner.xcodeproj/project.pbxproj", content: pbxproj },
     { path: "ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme", content: xcscheme },
