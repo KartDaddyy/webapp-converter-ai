@@ -228,6 +228,23 @@ flutter:
             </div>
           )}
 
+          {/* Push to GitHub */}
+          <Button
+            onClick={pushToGitHub}
+            disabled={pushing || !project?.flutter_code}
+            variant="outline"
+            className="w-full text-xs border-slate-300"
+            size="sm"
+          >
+            {pushing ? (
+              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Pushing to GitHub...</>
+            ) : pushSuccess ? (
+              <><CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-emerald-500" />Pushed to GitHub!</>
+            ) : (
+              <><GitBranch className="w-3.5 h-3.5 mr-1.5" />Push Code to GitHub</>
+            )}
+          </Button>
+
           {/* Trigger button */}
           <Button
             onClick={triggerBuild}
