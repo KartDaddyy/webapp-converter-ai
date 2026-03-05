@@ -70,6 +70,13 @@ export default function CodemagicPanel({ project }) {
     setLoadingApps(false);
   };
 
+  const resetBuild = () => {
+    setBuildStatus(null);
+    setBuildId(null);
+    setArtifacts([]);
+    setError(null);
+  };
+
   const triggerBuild = async () => {
     if (!selectedApp || !selectedWorkflow) return;
     setTriggering(true);
