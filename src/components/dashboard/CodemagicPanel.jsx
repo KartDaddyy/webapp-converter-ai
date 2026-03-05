@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, Zap, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink, Download } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const STATUS_CONFIG = {
-  finished: { label: "Finished", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
-  failed: { label: "Failed", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: XCircle },
-  building: { label: "Building...", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Loader2 },
-  preparing: { label: "Preparing", color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/20", icon: Clock },
-  queued: { label: "Queued", color: "text-slate-400", bg: "bg-slate-500/10 border-slate-500/20", icon: Clock },
+  finished: { label: "Build Finished!", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
+  failed: { label: "Build Failed", color: "text-red-500", bg: "bg-red-50 border-red-200", icon: XCircle },
+  building: { label: "Building on Codemagic...", color: "text-blue-500", bg: "bg-blue-50 border-blue-200", icon: Loader2 },
+  preparing: { label: "Preparing build...", color: "text-yellow-600", bg: "bg-yellow-50 border-yellow-200", icon: Clock },
+  queued: { label: "Queued...", color: "text-slate-500", bg: "bg-slate-50 border-slate-200", icon: Clock },
 };
 
 export default function CodemagicPanel() {
@@ -19,27 +19,35 @@ export default function CodemagicPanel() {
   const [triggering, setTriggering] = useState(false);
   const [buildId, setBuildId] = useState(null);
   const [buildStatus, setBuildStatus] = useState(null);
+  const [artifacts, setArtifacts] = useState([]);
   const [error, setError] = useState(null);
+  const pollRef = useRef(null);
 
   useEffect(() => {
     loadApps();
   }, []);
 
-  // Poll build status
   useEffect(() => {
     if (!buildId) return;
-    const interval = setInterval(async () => {
-      const res = await base44.functions.invoke("codemagicBuild", { action: "status", buildId });
-      const data = res.data;
-      if (data?.build) {
-        setBuildStatus(data.build);
-        if (["finished", "failed", "canceled"].includes(data.build.status)) {
-          clearInterval(interval);
-        }
-      }
-    }, 8000);
-    return () => clearInterval(interval);
+    pollRef.current = setInterval(() => pollBuild(buildId), 8000);
+    return () => clearInterval(pollRef.current);
   }, [buildId]);
+
+  const pollBuild = async (id) => {
+    const res = await base44.functions.invoke("codemagicBuild", { action: "status", buildId: id });
+    const data = res.data;
+    const build = data?.build || data?.builds?.[0];
+    if (!build) return;
+    setBuildStatus(build.status);
+    if (build.status === "finished") {
+      clearInterval(pollRef.current);
+      // Extract APK/AAB artifacts
+      const arts = build.artefacts || build.artifacts || [];
+      setArtifacts(arts);
+    } else if (build.status === "failed" || build.status === "canceled") {
+      clearInterval(pollRef.current);
+    }
+  };
 
   const loadApps = async () => {
     setLoadingApps(true);
@@ -49,12 +57,13 @@ export default function CodemagicPanel() {
     if (data?.applications) {
       setApps(data.applications);
       if (data.applications.length > 0) {
-        setSelectedApp(data.applications[0]);
-        const workflows = Object.keys(data.applications[0].workflows || {});
+        const app = data.applications[0];
+        setSelectedApp(app);
+        const workflows = Object.keys(app.workflows || {});
         if (workflows.length > 0) setSelectedWorkflow(workflows[0]);
       }
     } else {
-      setError(data?.error || "Could not load Codemagic apps. Make sure your API token is correct.");
+      setError(data?.error || "Could not load apps. Check your API token.");
     }
     setLoadingApps(false);
   };
@@ -63,6 +72,8 @@ export default function CodemagicPanel() {
     if (!selectedApp || !selectedWorkflow) return;
     setTriggering(true);
     setBuildStatus(null);
+    setArtifacts([]);
+    setBuildId(null);
     setError(null);
     const res = await base44.functions.invoke("codemagicBuild", {
       action: "triggerBuild",
@@ -72,14 +83,22 @@ export default function CodemagicPanel() {
     const data = res.data;
     if (data?.buildId) {
       setBuildId(data.buildId);
-      setBuildStatus({ status: "queued" });
+      setBuildStatus("queued");
     } else {
       setError(data?.error || "Failed to trigger build.");
     }
     setTriggering(false);
   };
 
-  const statusCfg = buildStatus ? (STATUS_CONFIG[buildStatus.status] || STATUS_CONFIG.queued) : null;
+  const getPublicUrl = async (artifactUrl) => {
+    const res = await base44.functions.invoke("codemagicBuild", { action: "publicUrl", artifactUrl });
+    if (res.data?.url) {
+      window.open(res.data.url, "_blank");
+    }
+  };
+
+  const statusCfg = buildStatus ? (STATUS_CONFIG[buildStatus] || STATUS_CONFIG.queued) : null;
+  const apkArtifacts = artifacts.filter(a => a.name?.endsWith(".apk") || a.name?.endsWith(".aab") || a.name?.endsWith(".ipa"));
 
   return (
     <div className="space-y-4">
@@ -87,9 +106,9 @@ export default function CodemagicPanel() {
         <div>
           <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
             <Zap className="w-4 h-4 text-amber-500" />
-            Codemagic CI/CD
+            Codemagic Cloud Build
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">Trigger cloud builds on Codemagic</p>
+          <p className="text-xs text-slate-500 mt-0.5">Trigger a real cloud build — get APK download link</p>
         </div>
         <Button variant="ghost" size="icon" onClick={loadApps} disabled={loadingApps} className="h-7 w-7">
           <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${loadingApps ? "animate-spin" : ""}`} />
@@ -106,14 +125,14 @@ export default function CodemagicPanel() {
           Loading your Codemagic apps...
         </div>
       ) : apps.length === 0 && !error ? (
-        <div className="text-xs text-slate-400 py-2">
-          No apps found on Codemagic. Add your Flutter project at{" "}
-          <a href="https://codemagic.io/apps" target="_blank" rel="noreferrer" className="text-blue-500 underline">codemagic.io/apps</a>.
+        <div className="text-xs text-slate-500 py-2 leading-relaxed">
+          No apps found. First add your Flutter project at{" "}
+          <a href="https://codemagic.io/apps" target="_blank" rel="noreferrer" className="text-blue-500 underline">codemagic.io/apps</a>, then come back and refresh.
         </div>
       ) : (
         <>
           {/* App selector */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="text-xs font-medium text-slate-600">App</label>
             <select
               className="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
@@ -125,6 +144,7 @@ export default function CodemagicPanel() {
                 setSelectedWorkflow(workflows[0] || null);
                 setBuildStatus(null);
                 setBuildId(null);
+                setArtifacts([]);
               }}
             >
               {apps.map(app => (
@@ -135,12 +155,12 @@ export default function CodemagicPanel() {
 
           {/* Workflow selector */}
           {selectedApp && Object.keys(selectedApp.workflows || {}).length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <label className="text-xs font-medium text-slate-600">Workflow</label>
               <select
                 className="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
                 value={selectedWorkflow || ""}
-                onChange={e => { setSelectedWorkflow(e.target.value); setBuildStatus(null); setBuildId(null); }}
+                onChange={e => { setSelectedWorkflow(e.target.value); setBuildStatus(null); setBuildId(null); setArtifacts([]); }}
               >
                 {Object.entries(selectedApp.workflows).map(([id, wf]) => (
                   <option key={id} value={id}>{wf.name || id}</option>
@@ -152,36 +172,54 @@ export default function CodemagicPanel() {
           {/* Trigger button */}
           <Button
             onClick={triggerBuild}
-            disabled={triggering || !selectedApp || !selectedWorkflow}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-white text-xs"
+            disabled={triggering || !selectedApp || !selectedWorkflow || ["queued", "preparing", "building"].includes(buildStatus)}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-white text-xs font-semibold"
             size="sm"
           >
             {triggering ? (
-              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Triggering...</>
+              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Starting build...</>
             ) : (
-              <><Zap className="w-3.5 h-3.5 mr-1.5" />Trigger Build</>
+              <><Zap className="w-3.5 h-3.5 mr-1.5" />Build APK on Codemagic</>
             )}
           </Button>
 
           {/* Build status */}
-          {buildStatus && statusCfg && (
-            <div className={`flex items-center gap-2 border rounded-xl px-3 py-2.5 ${statusCfg.bg}`}>
-              <statusCfg.icon className={`w-4 h-4 ${statusCfg.color} ${buildStatus.status === "building" ? "animate-spin" : ""}`} />
-              <div className="flex-1 min-w-0">
-                <p className={`text-xs font-medium ${statusCfg.color}`}>{statusCfg.label}</p>
-                {buildStatus.id && (
-                  <p className="text-[10px] text-slate-400 font-mono truncate">ID: {buildStatus.id || buildId}</p>
+          {statusCfg && (
+            <div className={`border rounded-xl px-4 py-3 ${statusCfg.bg}`}>
+              <div className="flex items-center gap-2">
+                <statusCfg.icon className={`w-4 h-4 ${statusCfg.color} ${["building", "preparing", "queued"].includes(buildStatus) ? "animate-spin" : ""}`} />
+                <p className={`text-xs font-semibold ${statusCfg.color}`}>{statusCfg.label}</p>
+                {buildId && (
+                  <a
+                    href={`https://codemagic.io/app/${selectedApp?._id}/build/${buildId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="ml-auto text-slate-400 hover:text-slate-600"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
                 )}
               </div>
-              {buildId && (
-                <a
-                  href={`https://codemagic.io/app/${selectedApp?._id}/build/${buildId}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-slate-400 hover:text-slate-600"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+
+              {/* Artifact download buttons */}
+              {apkArtifacts.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {apkArtifacts.map((art, i) => (
+                    <Button
+                      key={i}
+                      onClick={() => getPublicUrl(art.url)}
+                      size="sm"
+                      className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs"
+                    >
+                      <Download className="w-3.5 h-3.5 mr-1.5" />
+                      Download {art.name}
+                    </Button>
+                  ))}
+                </div>
+              )}
+
+              {buildStatus === "finished" && apkArtifacts.length === 0 && (
+                <p className="text-xs text-slate-500 mt-2">Build finished. Check Codemagic for artifacts.</p>
               )}
             </div>
           )}
