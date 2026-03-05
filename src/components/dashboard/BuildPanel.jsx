@@ -296,7 +296,7 @@ export default function BuildPanel({ project, onBuild, isBuilding }) {
 
       {/* Codemagic CI/CD */}
       <div className="border border-slate-100 rounded-2xl p-5 bg-slate-50">
-        <CodemagicPanel />
+        <CodemagicPanel project={project} />
       </div>
 
       <SetupGuideModal
