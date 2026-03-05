@@ -111,6 +111,13 @@ zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
 distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip`;
 
+  const gradleProperties = `org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=2G -XX:+HeapDumpOnOutOfMemoryError
+android.useAndroidX=true
+android.enableJetifier=true
+org.gradle.daemon=true
+org.gradle.parallel=true
+org.gradle.caching=true`;
+
   const mainActivity = `package com.example.${safeAppName}
 
 import io.flutter.embedding.android.FlutterActivity
