@@ -36,6 +36,11 @@ function buildFlutterFiles(appName, safeAppName, code, pubspec) {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 android {
     namespace "com.example.${safeAppName}"
     compileSdk 34
