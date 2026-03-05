@@ -557,7 +557,7 @@ flutter:
       const blobRes = await fetch(`${apiBase}/git/blobs`, {
         method: "POST",
         headers: ghHeaders,
-        body: JSON.stringify({ content: f.content, encoding: "utf-8" })
+        body: JSON.stringify({ content: f.content, encoding: f.encoding || "utf-8" })
       });
       const blobData = await blobRes.json();
       return { path: f.path, mode: "100644", type: "blob", sha: blobData.sha };
