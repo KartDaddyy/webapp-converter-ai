@@ -11,7 +11,7 @@ const STATUS_CONFIG = {
   queued: { label: "Queued...", color: "text-slate-500", bg: "bg-slate-50 border-slate-200", icon: Clock },
 };
 
-export default function CodemagicPanel() {
+export default function CodemagicPanel({ project }) {
   const [apps, setApps] = useState([]);
   const [loadingApps, setLoadingApps] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
@@ -21,6 +21,8 @@ export default function CodemagicPanel() {
   const [buildStatus, setBuildStatus] = useState(null);
   const [artifacts, setArtifacts] = useState([]);
   const [error, setError] = useState(null);
+  const [pushing, setPushing] = useState(false);
+  const [pushSuccess, setPushSuccess] = useState(false);
   const pollRef = useRef(null);
 
   useEffect(() => {
