@@ -235,6 +235,13 @@ export default function CodemagicPanel({ project }) {
             )}
           </Button>
 
+          {/* Reset if stuck */}
+          {["queued", "preparing", "building", "failed", "finished"].includes(buildStatus) && (
+            <button onClick={resetBuild} className="w-full text-xs text-slate-400 hover:text-slate-600 underline text-center mt-1">
+              Start a new build
+            </button>
+          )}
+
           {/* Build status */}
           {statusCfg && (
             <div className={`border rounded-xl px-4 py-3 ${statusCfg.bg}`}>
