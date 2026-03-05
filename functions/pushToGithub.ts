@@ -104,7 +104,7 @@ include ":app"`;
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
-distributionUrl=https\\://services.gradle.org/distributions/gradle-8.3-bin.zip`;
+distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-bin.zip`;
 
   const mainActivity = `package com.example.${safeAppName}
 
