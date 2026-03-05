@@ -9,8 +9,6 @@ Deno.serve(async (req) => {
     }
 
     const { owner, repo, files } = await req.json();
-    // files: array of { path: string, content: string }
-
     if (!owner || !repo || !files?.length) {
       return Response.json({ error: 'Missing owner, repo, or files' }, { status: 400 });
     }
@@ -29,19 +27,9 @@ Deno.serve(async (req) => {
     const branchRes = await fetch(`${apiBase}/git/ref/heads/main`, { headers: ghHeaders });
     const branchData = await branchRes.json();
 
-    let baseSha;
+    let baseSha = null;
     if (branchRes.ok) {
       baseSha = branchData.object.sha;
-    } else {
-      // Repo might be empty - get default branch or init
-      const repoRes = await fetch(`${apiBase}`, { headers: ghHeaders });
-      const repoData = await repoRes.json();
-      // Try to get any existing ref
-      const refsRes = await fetch(`${apiBase}/git/refs`, { headers: ghHeaders });
-      const refsData = await refsRes.json();
-      if (refsData.length > 0) {
-        baseSha = refsData[0].object.sha;
-      }
     }
 
     // Create blobs for each file
@@ -58,7 +46,6 @@ Deno.serve(async (req) => {
     // Create tree
     const treeBody = { tree: blobs };
     if (baseSha) {
-      // Get current commit to get its tree sha
       const commitRes = await fetch(`${apiBase}/git/commits/${baseSha}`, { headers: ghHeaders });
       const commitData = await commitRes.json();
       treeBody.base_tree = commitData.tree.sha;
