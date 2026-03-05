@@ -179,12 +179,11 @@ Upload this project to https://flutlab.io to build in the browser.
 `;
 
   const zip = new JSZip();
-  const folder = zip.folder(safeAppName);
-  folder.folder("lib").file("main.dart", code);
-  folder.file("pubspec.yaml", pubspec);
-  folder.file("README.md", readme);
-  folder.folder(".github").folder("workflows").file("flutter-build.yml", githubWorkflow);
-  folder.folder("android").folder("app").folder("src").folder("main").file("AndroidManifest.xml", androidManifest);
+  zip.folder("lib").file("main.dart", code);
+  zip.file("pubspec.yaml", pubspec);
+  zip.file("README.md", readme);
+  zip.folder(".github").folder("workflows").file("flutter-build.yml", githubWorkflow);
+  zip.folder("android").folder("app").folder("src").folder("main").file("AndroidManifest.xml", androidManifest);
 
   return { zip, safeAppName, appName };
 }
