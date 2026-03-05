@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Zap, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink, Download } from "lucide-react";
+import { Loader2, Zap, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink, Download, GitBranch } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const STATUS_CONFIG = {
