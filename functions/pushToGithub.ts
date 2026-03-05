@@ -32,7 +32,7 @@ function buildFlutterFiles(appName, safeAppName, code, pubspec) {
 
   const buildGradle = `plugins {
     id "com.android.application"
-    id "kotlin-android"
+    id "org.jetbrains.kotlin.android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -47,7 +47,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = "11"
     }
 
     defaultConfig {
