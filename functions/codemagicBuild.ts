@@ -8,7 +8,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, buildId, appId, workflowId, projectName, flutterCode } = await req.json();
+    const body = await req.json();
+    const { action, buildId, appId, workflowId, artifactUrl } = body;
     const token = Deno.env.get("CODEMAGIC_API_TOKEN");
 
     if (!token) {
@@ -20,13 +21,6 @@ Deno.serve(async (req) => {
       "Content-Type": "application/json"
     };
 
-    // Get build status
-    if (action === "status" && buildId) {
-      const res = await fetch(`https://api.codemagic.io/builds/${buildId}`, { headers });
-      const data = await res.json();
-      return Response.json(data);
-    }
-
     // List apps
     if (action === "listApps") {
       const res = await fetch("https://api.codemagic.io/apps", { headers });
@@ -36,15 +30,30 @@ Deno.serve(async (req) => {
 
     // Trigger a build
     if (action === "triggerBuild" && appId && workflowId) {
-      const body = {
-        appId,
-        workflowId,
-        branch: "main"
-      };
       const res = await fetch("https://api.codemagic.io/builds", {
         method: "POST",
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify({ appId, workflowId, branch: "main" })
+      });
+      const data = await res.json();
+      return Response.json(data);
+    }
+
+    // Get build status + artifacts
+    if (action === "status" && buildId) {
+      const res = await fetch(`https://api.codemagic.io/builds/${buildId}`, { headers });
+      const data = await res.json();
+      return Response.json(data);
+    }
+
+    // Create public download URL for an artifact
+    if (action === "publicUrl" && artifactUrl) {
+      // artifactUrl is like: https://api.codemagic.io/artifacts/xxx/yyy/app.apk
+      const expiresAt = Math.floor(Date.now() / 1000) + 60 * 60 * 24; // 24h
+      const res = await fetch(`${artifactUrl}/public-url`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ expiresAt })
       });
       const data = await res.json();
       return Response.json(data);
