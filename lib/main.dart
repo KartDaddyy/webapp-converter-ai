@@ -10,32 +10,21 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'RiConnect',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF1E3A8A)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF4CAF50)),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: MainScreen(),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
-
   @override
   _MainScreenState createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-
-  static const List<Widget> _screens = <Widget>[ 
-    OnboardingScreen(),
-    HomeFeedScreen(),
-    SearchDiscoveryScreen(),
-    MessagingScreen(),
-    NotificationsScreen(),
-    SettingsScreen(),
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -46,81 +35,76 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('RiConnect'),),
-      body: _screens[_selectedIndex],
+      appBar: AppBar(title: Text('RiConnect')), 
+      body: _getSelectedScreen(),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Features'),
-          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: 'Pricing'),
-          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
-          BottomNavigationBarItem(icon: Icon(Icons.contact_mail), label: 'Contact'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
     );
   }
+
+  Widget _getSelectedScreen() {
+    switch (_selectedIndex) {
+      case 0:
+        return HomeScreen();
+      case 1:
+        return ChatScreen();
+      case 2:
+        return DashboardScreen();
+      case 3:
+        return NotificationsScreen();
+      default:
+        return HomeScreen();
+    }
+  }
 }
 
-class OnboardingScreen extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Onboarding'),),
+      appBar: AppBar(title: Text('Home')), 
       body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('Welcome to RiConnect'),),),
-          Card(child: ListTile(title: Text('Discover new connections'),),),
-          Card(child: ListTile(title: Text('Seamless networking'),),),
+        children: <Widget>[
+          Card(child: ListTile(title: Text('Welcome to RiConnect!'))),
+          Card(child: ListTile(title: Text('Enhance your collaboration!'))),
         ],
       ),
     );
   }
 }
 
-class HomeFeedScreen extends StatelessWidget {
+class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home Feed'),),
+      appBar: AppBar(title: Text('Chat')), 
       body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('Post 1: Connecting in your area'),),),
-          Card(child: ListTile(title: Text('Post 2: New features added!'),),),
-          Card(child: ListTile(title: Text('Post 3: Upcoming events'),),),
+        children: <Widget>[
+          Card(child: ListTile(title: Text('Chat with team members'))),
+          Card(child: ListTile(title: Text('Latest messages will appear here'))),
         ],
       ),
     );
   }
 }
 
-class SearchDiscoveryScreen extends StatelessWidget {
+class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Search & Discovery'),),
+      appBar: AppBar(title: Text('Project Dashboard')), 
       body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('Search connections'),),),
-          Card(child: ListTile(title: Text('Browse categories'),),),
-          Card(child: ListTile(title: Text('Discover new profiles'),),),
-        ],
-      ),
-    );
-  }
-}
-
-class MessagingScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Messaging'),),
-      body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('Chat with John'),),),
-          Card(child: ListTile(title: Text('Chat with Jane'),),),
-          Card(child: ListTile(title: Text('Chat with Chris'),),),
+        children: <Widget>[
+          Card(child: ListTile(title: Text('Projects Overview'))),
+          Card(child: ListTile(title: Text('Team Contributions'))),
         ],
       ),
     );
@@ -131,28 +115,11 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Notifications'),),
+      appBar: AppBar(title: Text('Notifications')), 
       body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('New connection request from Alex'),),),
-          Card(child: ListTile(title: Text('Reminder for event'),),),
-          Card(child: ListTile(title: Text('Message from Sarah'),),),
-        ],
-      ),
-    );
-  }
-}
-
-class SettingsScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings'),),
-      body: ListView(
-        children: const <Widget>[
-          Card(child: ListTile(title: Text('Account Settings'),),),
-          Card(child: ListTile(title: Text('Privacy Settings'),),),
-          Card(child: ListTile(title: Text('Notification Preferences'),),),
+        children: <Widget>[
+          Card(child: ListTile(title: Text('New update available!'))),
+          Card(child: ListTile(title: Text('You have a new message'))),
         ],
       ),
     );
