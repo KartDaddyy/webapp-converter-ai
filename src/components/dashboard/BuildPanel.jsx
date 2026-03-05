@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Loader2, CheckCircle2, Package, Smartphone, Code2, Apple } from "lucide-react";
 import JSZip from "jszip";
 import SetupGuideModal from "@/components/dashboard/SetupGuideModal";
+import CodemagicPanel from "@/components/dashboard/CodemagicPanel";
 
 const buildTypes = [
   {
