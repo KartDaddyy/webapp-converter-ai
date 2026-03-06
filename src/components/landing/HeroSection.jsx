@@ -115,7 +115,7 @@ export default function HeroSection({ onSubmitUrl, isLoading }) {
           transition={{ delay: 0.6 }}
           className="flex flex-wrap items-center justify-center gap-4 mt-10 text-sm text-slate-400"
         >
-          {["Flutter Source Code", "APK & AAB Builds", "iOS Ready", "AI Commands"].map((tag) => (
+          {["Flutter & React Native", "APK & AAB Builds", "iOS Ready", "AI Commands"].map((tag) => (
             <span key={tag} className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               {tag}
