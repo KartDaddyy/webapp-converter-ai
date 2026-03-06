@@ -118,6 +118,7 @@ STRICT REQUIREMENTS - follow exactly:
 9. Use proper Dart syntax: no trailing commas errors, all brackets matched, all classes properly closed
 10. Do NOT use any external packages - only flutter/material.dart
 11. Return ONLY valid Dart code with NO markdown, NO \`\`\`, NO explanations - just the raw .dart file content starting with "import 'package:flutter/material.dart';"
+12. CRITICAL: In Dart string literals, NEVER use bare dollar signs like \$10 or \$30. Always escape them as \\\$10 or use concatenation. Dollar signs in strings MUST be escaped with a backslash.
 
 Generate the complete file now:`,
         response_json_schema: {
