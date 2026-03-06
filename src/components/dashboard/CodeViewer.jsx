@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, FileCode2, ChevronDown, ChevronUp } from "lucide-react";
 
-export default function CodeViewer({ code, language = "dart" }) {
+export default function CodeViewer({ code, rnCode, framework = "flutter" }) {
+  const activeCode = framework === "react_native" ? rnCode : code;
   const [copied, setCopied] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
