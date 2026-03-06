@@ -512,241 +512,193 @@ NS_ASSUME_NONNULL_END
   ];
 }
 
-function buildReactNativeFiles(appName, safeAppName, code) {
-  const packageJson = `{
-  "name": "${safeAppName}",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
-    "build": "cd android && chmod +x gradlew && ./gradlew assembleDebug",
-    "test": "jest",
-    "lint": "eslint ."
-  },
-  "dependencies": {
-    "react": "18.2.0",
-    "react-native": "0.73.4"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.20.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
-    "@react-native/babel-preset": "0.73.21",
-    "@react-native/eslint-config": "0.73.2",
-    "@react-native/metro-config": "0.73.5",
-    "@react-native/typescript-config": "0.73.1",
-    "@types/react": "^18.2.6",
-    "@types/react-native": "^0.73.0",
-    "babel-jest": "^29.6.3",
-    "eslint": "^8.19.0",
-    "jest": "^29.6.3",
-    "prettier": "2.8.8",
-    "react-test-renderer": "18.2.0",
-    "typescript": "5.0.4"
-  },
-  "engines": { "node": ">=18" },
-  "jest": { "preset": "react-native" }
-}`;
+function buildKotlinAndroidFiles(appName, safeAppName, code) {
+  const packageId = `com.example.${safeAppName}`;
 
-  const babelConfig = `module.exports = {
-  presets: ['module:@react-native/babel-preset'],
-};`;
-
-  const metroConfig = `const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
-const config = {};
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);`;
-
-  const tsConfig = `{
-  "extends": "@react-native/typescript-config/tsconfig.json"
-}`;
-
-  const androidManifest = `<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  const androidManifest = `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-      android:name=".MainApplication"
-      android:label="${appName}"
-      android:icon="@mipmap/ic_launcher"
-      android:allowBackup="false"
-      android:theme="@style/AppTheme">
-      <activity
-        android:name=".MainActivity"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="${appName}"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
-        android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-      </activity>
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>`;
 
-  const buildGradle = `apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "com.facebook.react"
+  const mainActivity = `package ${packageId}
 
-react {}
+import android.os.Bundle
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val webView = WebView(this)
+        webView.webViewClient = WebViewClient()
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        setContentView(webView)
+        webView.loadDataWithBaseURL(null, getAppHtml(), "text/html", "UTF-8", null)
+    }
+
+    private fun getAppHtml(): String {
+        return """
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+</style>
+</head>
+<body>
+${code}
+</body>
+</html>
+        """.trimIndent()
+    }
+}`;
+
+  const buildGradle = `plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    ndkVersion rootProject.ext.ndkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-    compileSdk rootProject.ext.compileSdkVersion
-    namespace "com.${safeAppName}"
+    namespace '${packageId}'
+    compileSdk 34
+
     defaultConfig {
-        applicationId "com.${safeAppName}"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        applicationId '${packageId}'
+        minSdk 24
+        targetSdk 34
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
     }
+
     buildTypes {
-        debug { signingConfig signingConfigs.debug }
         release {
-            signingConfig signingConfigs.debug
             minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
 dependencies {
-    implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:hermes-android")
-}
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+}`;
 
-apply from: file("../../node_modules/@react-native/gradle-plugin/react-native-defaults.gradle")`;
+  const rootBuildGradle = `// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    id 'com.android.application' version '8.2.0' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.22' apply false
+}`;
 
-  const rootBuildGradle = `buildscript {
-    ext {
-        buildToolsVersion = "34.0.0"
-        minSdkVersion = 23
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        ndkVersion = "26.1.10909125"
-        kotlinVersion = "1.9.22"
-    }
-    repositories { google(); mavenCentral() }
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.3.0")
-        classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+  const gradleSettings = `pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
     }
 }
-apply plugin: "com.facebook.react.rootproject"`;
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 
-  const gradleSettings = `pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 rootProject.name = '${appName}'
 include ':app'`;
 
   const gradleWrapper = `distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
+distributionUrl=https\\://services.gradle.org/distributions/gradle-8.4-bin.zip
 zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\\://services.gradle.org/distributions/gradle-8.6-bin.zip`;
+zipStorePath=wrapper/dists`;
 
-  const gradleProperties = `android.useAndroidX=true
-android.enableJetifier=true
-reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
-newArchEnabled=false
-hermesEnabled=true`;
+  const gradleProperties = `org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+kotlin.code.style=official
+android.nonTransitiveRClass=true`;
 
-  const mainApplication = `package com.${safeAppName};
-import com.facebook.react.PackageList;
-import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactNativeHost;
-import com.facebook.react.ReactPackage;
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
-import com.facebook.react.defaults.DefaultReactNativeHost;
-import com.facebook.soloader.SoLoader;
-import android.app.Application;
-import java.util.List;
+  const proguardRules = `# Add project specific ProGuard rules here.
+-keepattributes *Annotation*
+-keep class ${packageId}.** { *; }`;
 
-public class MainApplication extends Application implements ReactApplication {
-  private final ReactNativeHost mReactNativeHost = new DefaultReactNativeHost(this) {
-    @Override public boolean getUseDeveloperSupport() { return BuildConfig.DEBUG; }
-    @Override public List<ReactPackage> getPackages() { return new PackageList(this).getPackages(); }
-    @Override public String getJSMainModuleName() { return "index"; }
-    @Override protected Boolean isNewArchEnabled() { return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED; }
-    @Override protected Boolean isHermesEnabled() { return BuildConfig.IS_HERMES_ENABLED; }
-  };
-  @Override public ReactNativeHost getReactNativeHost() { return mReactNativeHost; }
-  @Override public void onCreate() { super.onCreate(); SoLoader.init(this, false); }
-}`;
-
-  const mainActivity = `package com.${safeAppName};
-import com.facebook.react.ReactActivity;
-import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
-import com.facebook.react.defaults.DefaultReactActivityDelegate;
-
-public class MainActivity extends ReactActivity {
-  @Override protected String getMainComponentName() { return "${appName}"; }
-  @Override protected ReactActivityDelegate createReactActivityDelegate() {
-    return new DefaultReactActivityDelegate(this, getMainComponentName(), DefaultNewArchitectureEntryPoint.getFabricEnabled());
-  }
-}`;
-
-  const stylesXml = `<resources>
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-    </style>
+  const colorsXml = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 </resources>`;
 
-  const indexJs = `import {AppRegistry} from 'react-native';
-import App from './App';
-import {name as appName} from './app.json';
-AppRegistry.registerComponent(appName, () => App);`;
-
-  const appJson = `{"name": "${appName}", "displayName": "${appName}"}`;
+  const stringsXml = `<resources>
+    <string name="app_name">${appName}</string>
+</resources>`;
 
   const iconBase64 = `iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAABMSURBVHgB7cExAQAAAMKg9U9tCy+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAMBuAABHgAAAABJRU5ErkJggg==`;
 
   const codemagicYaml = `workflows:
   android-workflow:
-    name: Android Build (React Native)
+    name: Android Build (Kotlin)
     max_build_duration: 60
     environment:
-      node: 18
       java: 17
     scripts:
-      - name: Install dependencies
-        script: npm install --legacy-peer-deps
       - name: Build Android APK
         script: |
-          cd android
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
-      - android/app/build/outputs/apk/debug/app-debug.apk
+      - app/build/outputs/apk/debug/app-debug.apk
 `;
 
   return [
-    { path: "App.tsx", content: code },
-    { path: "index.js", content: indexJs },
-    { path: "app.json", content: appJson },
-    { path: "package.json", content: packageJson },
-    { path: "babel.config.js", content: babelConfig },
-    { path: "metro.config.js", content: metroConfig },
-    { path: "rn-tsconfig.json", content: tsConfig },
+    { path: "app/src/main/AndroidManifest.xml", content: androidManifest },
+    { path: `app/src/main/java/${packageId.replace(/\./g, '/')}/MainActivity.kt`, content: mainActivity },
+    { path: "app/build.gradle", content: buildGradle },
+    { path: "app/proguard-rules.pro", content: proguardRules },
+    { path: "build.gradle", content: rootBuildGradle },
+    { path: "settings.gradle", content: gradleSettings },
+    { path: "gradle/wrapper/gradle-wrapper.properties", content: gradleWrapper },
+    { path: "gradle.properties", content: gradleProperties },
+    { path: "app/src/main/res/values/colors.xml", content: colorsXml },
+    { path: "app/src/main/res/values/strings.xml", content: stringsXml },
+    { path: "app/src/main/res/mipmap-mdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
+    { path: "app/src/main/res/mipmap-hdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
+    { path: "app/src/main/res/mipmap-xhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
+    { path: "app/src/main/res/mipmap-xxhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
+    { path: "app/src/main/res/mipmap-xxxhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
     { path: "codemagic.yaml", content: codemagicYaml },
-    { path: "android/app/src/main/AndroidManifest.xml", content: androidManifest },
-    { path: "android/app/build.gradle", content: buildGradle },
-    { path: "android/build.gradle", content: rootBuildGradle },
-    { path: "android/settings.gradle", content: gradleSettings },
-    { path: "android/gradle/wrapper/gradle-wrapper.properties", content: gradleWrapper },
-    { path: "android/gradle.properties", content: gradleProperties },
-    { path: `android/app/src/main/java/com/${safeAppName}/MainApplication.java`, content: mainApplication },
-    { path: `android/app/src/main/java/com/${safeAppName}/MainActivity.java`, content: mainActivity },
-    { path: "android/app/src/main/res/values/styles.xml", content: stylesXml },
-    { path: "android/app/src/main/res/mipmap-mdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
-    { path: "android/app/src/main/res/mipmap-hdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
-    { path: "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
-    { path: "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
-    { path: "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png", content: iconBase64, encoding: "base64" },
   ];
 }
 
