@@ -479,12 +479,10 @@ NS_ASSUME_NONNULL_END
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Build debug APK
-        script: |
-          cd android
-          ./gradlew assembleDebug
+      - name: Build Android AAB
+        script: flutter build appbundle --debug
     artifacts:
-      - android/app/build/outputs/apk/debug/app-debug.apk
+      - build/app/outputs/bundle/debug/app-debug.aab
 `;
 
   return [
