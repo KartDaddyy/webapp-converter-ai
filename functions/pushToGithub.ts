@@ -472,16 +472,19 @@ NS_ASSUME_NONNULL_END
   const codemagicYaml = `workflows:
   android-workflow:
     name: Android Build
-    max_build_duration: 30
+    max_build_duration: 60
     environment:
       flutter: stable
+      java: 17
     scripts:
-      - name: Get packages
+      - name: Get Flutter packages
         script: flutter pub get
-      - name: Build APK
-        script: flutter build apk --debug --android-skip-build-dependency-validation
+      - name: Build debug APK
+        script: |
+          cd android
+          ./gradlew assembleDebug
     artifacts:
-      - build/app/outputs/flutter-apk/*.apk
+      - android/app/build/outputs/apk/debug/app-debug.apk
 `;
 
   return [
