@@ -13,14 +13,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF1E3A8A)),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: MainScreen(),
     );
   }
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
-
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -29,11 +27,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeScreen(),
-    const FeaturesScreen(),
-    const PricingScreen(),
-    const AboutUsScreen(),
-    const ContactScreen(),
+    HomeScreen(),
+    FeaturesScreen(),
+    PricingScreen(),
+    AboutScreen(),
+    ContactScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -46,14 +44,14 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RiConnect'),
+        title: Text('RiConnect'),
       ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.featured_play_list), label: 'Features'),
-          BottomNavigationBarItem(icon: Icon(Icons.monetization_on), label: 'Pricing'),
+          BottomNavigationBarItem(icon: Icon(Icons.attach_money), label: 'Pricing'),
           BottomNavigationBarItem(icon: Icon(Icons.info), label: 'About Us'),
           BottomNavigationBarItem(icon: Icon(Icons.contact_mail), label: 'Contact'),
         ],
@@ -65,30 +63,16 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: Text('Home'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
         children: <Widget>[
-          Card(
-            child: ListTile(
-              title: const Text('Welcome to RiConnect'),
-              subtitle: const Text('Your professional networking starts here!'),
-            ),
-          ),
-          // Additional placeholders for Home screen
-          Card(
-            child: ListTile(
-              title: const Text('Recent Connections'),
-              subtitle: const Text('You have 5 new connections!'),
-            ),
-          ),
+          Card(child: ListTile(title: Text('Welcome to RiConnect!'))),
+          Card(child: ListTile(title: Text('Manage your contacts with ease!'))),
         ],
       ),
     );
@@ -96,29 +80,17 @@ class HomeScreen extends StatelessWidget {
 }
 
 class FeaturesScreen extends StatelessWidget {
-  const FeaturesScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Features'),
+        title: Text('Features'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
         children: <Widget>[
-          Card(
-            child: ListTile(
-              title: const Text('Feature 1'),
-              subtitle: const Text('Description of Feature 1.'),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: const Text('Feature 2'),
-              subtitle: const Text('Description of Feature 2.'),
-            ),
-          ),
+          Card(child: ListTile(title: Text('Reconnect easily with contacts'))),
+          Card(child: ListTile(title: Text('Track your relationships effectively'))),
+          Card(child: ListTile(title: Text('Organize communications'))),
         ],
       ),
     );
@@ -126,53 +98,34 @@ class FeaturesScreen extends StatelessWidget {
 }
 
 class PricingScreen extends StatelessWidget {
-  const PricingScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pricing'),
+        title: Text('Pricing'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
         children: <Widget>[
-          Card(
-            child: ListTile(
-              title: const Text('Basic Plan'),
-              subtitle: const Text('Monthly fee: $10'),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: const Text('Pro Plan'),
-              subtitle: const Text('Monthly fee: $30'),
-            ),
-          ),
+          Card(child: ListTile(title: Text('Free Plan - Basic Features'))),
+          Card(child: ListTile(title: Text('Pro Plan - Advanced Features for \\$10/month'))),
+          Card(child: ListTile(title: Text('Business Plan - Custom Features for \\$30/month'))),
         ],
       ),
     );
   }
 }
 
-class AboutUsScreen extends StatelessWidget {
-  const AboutUsScreen({Key? key}) : super(key: key);
-
+class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Us'),
+        title: Text('About Us'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
         children: <Widget>[
-          Card(
-            child: ListTile(
-              title: const Text('Our Mission'),
-              subtitle: const Text('To connect professionals worldwide.'),
-            ),
-          ),
+          Card(child: ListTile(title: Text('Learn about RiConnect'))),
+          Card(child: ListTile(title: Text('Our mission and vision'))),
         ],
       ),
     );
@@ -180,23 +133,16 @@ class AboutUsScreen extends StatelessWidget {
 }
 
 class ContactScreen extends StatelessWidget {
-  const ContactScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact'),
+        title: Text('Contact'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(8.0),
         children: <Widget>[
-          Card(
-            child: ListTile(
-              title: const Text('Get in Touch'),
-              subtitle: const Text('Email: contact@riconnect.com'),
-            ),
-          ),
+          Card(child: ListTile(title: Text('Get in touch with us'))),
+          Card(child: ListTile(title: Text('Email: support@riconnect.com'))),
         ],
       ),
     );
