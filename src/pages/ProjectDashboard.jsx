@@ -202,14 +202,29 @@ Respond with:
       }
     });
 
-    // Step 2: Update the Flutter code to include the feature
+    // Step 2: Update the code to include the feature
+    const isRN = project.framework === "react_native";
+    const currentCode = isRN ? (project.react_native_code || "") : (project.flutter_code || "");
+
     const codeResult = await base44.integrations.Core.InvokeLLM({
-      prompt: `You are an expert Flutter developer. Update the following Flutter main.dart code to add this feature: "${command}"
+      prompt: isRN
+        ? `You are an expert React Native developer. Update the following React Native App.tsx code to add this feature: "${command}"
 
 Feature details: ${featureResult.description}
 
 CURRENT CODE:
-${project.flutter_code || "// No code yet"}
+${currentCode}
+
+REQUIREMENTS:
+- Add the feature using only react-native core components
+- Keep all existing screens and functionality intact
+- Return ONLY valid TypeScript/JSX code with NO markdown, NO backticks, NO explanations`
+        : `You are an expert Flutter developer. Update the following Flutter main.dart code to add this feature: "${command}"
+
+Feature details: ${featureResult.description}
+
+CURRENT CODE:
+${currentCode}
 
 REQUIREMENTS:
 - Add the feature in a realistic way using only flutter/material.dart (no external packages unless absolutely necessary for the feature)
@@ -234,10 +249,13 @@ REQUIREMENTS:
       }
     ];
 
-    await base44.entities.Project.update(project.id, {
-      features: updatedFeatures,
-      flutter_code: codeResult.code
-    });
+    const updatePayload = { features: updatedFeatures };
+    if (isRN) {
+      updatePayload.react_native_code = codeResult.code;
+    } else {
+      updatePayload.flutter_code = codeResult.code;
+    }
+    await base44.entities.Project.update(project.id, updatePayload);
 
     await loadProject();
     setIsCommandProcessing(false);
