@@ -188,7 +188,8 @@ REQUIREMENTS:
 - Add the feature in a realistic way using only flutter/material.dart (no external packages unless absolutely necessary for the feature)
 - Keep all existing screens and functionality intact
 - If the feature requires a new screen or dialog, add it
-- Return ONLY valid Dart code with NO markdown, NO \`\`\`, NO explanations — just the raw .dart file content`,
+- Return ONLY valid Dart code with NO markdown, NO \`\`\`, NO explanations — just the raw .dart file content
+- CRITICAL: In Dart string literals, escape all dollar signs as \\\$ (e.g. write \\\$10 not \$10, write \\\$30 not \$30)`,
       response_json_schema: {
         type: "object",
         properties: {
