@@ -100,8 +100,9 @@ export default function CodemagicPanel({ project }) {
   };
 
   const pushToGitHub = async () => {
-    if (!project?.flutter_code) {
-      setError("No Flutter code generated yet.");
+    const hasCode = project?.flutter_code || project?.react_native_code;
+    if (!hasCode) {
+      setError("No code generated yet.");
       return;
     }
     setPushing(true);
