@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 
 export default function HeroSection({ onSubmitUrl, isLoading }) {
   const [url, setUrl] = useState("");
+  const [framework, setFramework] = useState("flutter");
 
   const handleSubmit = (e) => {
     e.preventDefault();
