@@ -747,7 +747,7 @@ AppRegistry.registerComponent(appName, () => App);`;
     { path: "package.json", content: packageJson },
     { path: "babel.config.js", content: babelConfig },
     { path: "metro.config.js", content: metroConfig },
-    { path: "tsconfig.json", content: tsConfig },
+    { path: "rn-tsconfig.json", content: tsConfig },
     { path: "codemagic.yaml", content: codemagicYaml },
     { path: "android/app/src/main/AndroidManifest.xml", content: androidManifest },
     { path: "android/app/build.gradle", content: buildGradle },
