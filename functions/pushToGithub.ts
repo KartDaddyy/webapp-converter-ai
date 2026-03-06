@@ -531,9 +531,16 @@ Deno.serve(async (req) => {
     const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
     const rawCode = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
 
-    // Fix unescaped $ signs in Dart string literals (e.g. '$10' -> '\$10')
-    // Only replace $ that are NOT already preceded by a backslash, and not followed by { or identifier chars
-    const code = rawCode.replace(/(?<!\\)\$(?![{a-zA-Z_])/g, String.raw`\$`);
+    // Normalize all $ escaping in Dart string literals:
+    // 1. First, collapse any over-escaped \\$ back to a single backslash+dollar placeholder
+    // 2. Then ensure every bare $ (not followed by { or identifier) is escaped as \$
+    let code = rawCode;
+    // Remove all existing backslash-dollar sequences to start clean
+    code = code.replace(/\\+\$/g, 'DOLLAR_PLACEHOLDER');
+    // Also replace bare $ not followed by { or identifier
+    code = code.replace(/\$(?![{a-zA-Z_])/g, 'DOLLAR_PLACEHOLDER');
+    // Now restore all placeholders as properly escaped \$
+    code = code.replace(/DOLLAR_PLACEHOLDER/g, '\\$');
 
     const pubspec = `name: ${safeAppName}
 description: Generated Flutter app from ${project.url || "web"}
