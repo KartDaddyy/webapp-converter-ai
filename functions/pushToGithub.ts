@@ -672,7 +672,15 @@ android.nonTransitiveRClass=true`;
     name: Android Build (Kotlin)
     max_build_duration: 60
     environment:
+      groups: []
+      vars: {}
       java: 17
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
     scripts:
       - name: Build Android APK
         script: |
@@ -680,6 +688,9 @@ android.nonTransitiveRClass=true`;
           ./gradlew assembleDebug --no-daemon
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
 `;
 
   return [
