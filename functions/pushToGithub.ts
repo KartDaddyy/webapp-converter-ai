@@ -731,13 +731,14 @@ AppRegistry.registerComponent(appName, () => App);`;
       java: 17
     scripts:
       - name: Install dependencies
-        script: npm install
+        script: npm install --legacy-peer-deps
       - name: Build Android APK
         script: |
           cd android
-          ./gradlew assembleRelease
+          chmod +x gradlew
+          ./gradlew assembleDebug
     artifacts:
-      - android/app/build/outputs/apk/release/app-release-unsigned.apk
+      - android/app/build/outputs/apk/debug/app-debug.apk
 `;
 
   return [
