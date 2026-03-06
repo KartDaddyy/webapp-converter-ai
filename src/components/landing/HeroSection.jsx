@@ -10,7 +10,7 @@ export default function HeroSection({ onSubmitUrl, isLoading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (url.trim()) onSubmitUrl(url.trim());
+    if (url.trim()) onSubmitUrl(url.trim(), framework);
   };
 
   return (
