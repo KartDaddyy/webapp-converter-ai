@@ -677,7 +677,7 @@ android.nonTransitiveRClass=true`;
       - name: Build Android APK
         script: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
 `;
