@@ -24,7 +24,7 @@ export default function CodeViewer({ code, rnCode, framework = "flutter" }) {
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
           <FileCode2 className="w-4 h-4 text-cyan-500" />
-          Generated Flutter Code
+          {framework === "react_native" ? "Generated React Native Code" : "Generated Flutter Code"}
         </h3>
         <div className="flex gap-2">
           <Button
