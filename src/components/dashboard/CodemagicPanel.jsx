@@ -208,7 +208,7 @@ export default function CodemagicPanel({ project }) {
           {/* Push to GitHub */}
           <Button
             onClick={pushToGitHub}
-            disabled={pushing || !project?.flutter_code}
+            disabled={pushing || (!project?.flutter_code && !project?.react_native_code)}
             variant="outline"
             className="w-full text-xs border-slate-300"
             size="sm"
