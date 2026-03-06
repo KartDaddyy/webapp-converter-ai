@@ -391,7 +391,11 @@ REQUIREMENTS:
               {/* Right: Code viewer */}
               <div className="lg:col-span-3">
                 <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 sticky top-24">
-                  <CodeViewer code={project.flutter_code} />
+                  <CodeViewer
+                    code={project.flutter_code}
+                    rnCode={project.react_native_code}
+                    framework={project.framework || "flutter"}
+                  />
                 </div>
               </div>
             </motion.div>
