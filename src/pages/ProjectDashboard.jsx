@@ -91,13 +91,35 @@ Be creative and realistic based on the URL/domain.`,
         }
       });
 
-      // Generate Flutter code
+      // Generate code based on framework
       const screenNames = (result.screens || []).map(s => s.name).join(", ");
       const primaryColor = (result.colors?.[0] || "#3b82f6").replace("#", "0xFF");
-      const secondaryColor = (result.colors?.[1] || "#8b5cf6").replace("#", "0xFF");
+      const isRN = project.framework === "react_native";
 
       const codeResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert Flutter developer. Generate a complete, syntactically correct Flutter main.dart file for a mobile app based on this website: "${project.url}"
+        prompt: isRN
+          ? `You are an expert React Native developer. Generate a complete, single-file React Native App.tsx for a mobile app based on this website: "${project.url}"
+
+Website name: ${result.siteName}
+Description: ${result.description}
+Navigation items: ${JSON.stringify(result.navItems || [])}
+Screens to create: ${screenNames}
+Primary color: ${result.colors?.[0] || "#3b82f6"}
+Secondary color: ${result.colors?.[1] || "#8b5cf6"}
+
+STRICT REQUIREMENTS:
+1. Use only React Native core components: View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView, StatusBar, FlatList
+2. Implement a bottom tab navigation using a simple custom tab bar (no react-navigation package)
+3. Create ${Math.min((result.screens || []).length, 4)} screen components with realistic placeholder content matching each screen's purpose
+4. Use StyleSheet.create for all styles
+5. Primary color: ${result.colors?.[0] || "#3b82f6"}
+6. App name: "${result.siteName}"
+7. Export default App component
+8. Return ONLY valid TypeScript/JSX code with NO markdown, NO backticks, NO explanations - just raw .tsx file content starting with "import React"
+9. Do NOT use any packages except react and react-native
+
+Generate the complete App.tsx now:`
+          : `You are an expert Flutter developer. Generate a complete, syntactically correct Flutter main.dart file for a mobile app based on this website: "${project.url}"
 
 Website name: ${result.siteName}
 Description: ${result.description}
@@ -130,17 +152,22 @@ Generate the complete file now:`,
       });
 
       // Update project
-      await base44.entities.Project.update(project.id, {
+      const updateData = {
         status: "preview",
         analysis: result,
-        flutter_code: codeResult.code,
         screens: result.screens,
         color_scheme: {
           primary: result.colors?.[0] || "#3b82f6",
           secondary: result.colors?.[1] || "#8b5cf6",
           accent: result.colors?.[2] || "#ec4899"
         }
-      });
+      };
+      if (isRN) {
+        updateData.react_native_code = codeResult.code;
+      } else {
+        updateData.flutter_code = codeResult.code;
+      }
+      await base44.entities.Project.update(project.id, updateData);
 
       await loadProject();
       setIsAnalyzing(false);
