@@ -722,8 +722,8 @@ Deno.serve(async (req) => {
     let files;
 
     if (isRN) {
-      const rnCode = project.react_native_code || "import React from 'react';\nimport {View, Text} from 'react-native';\nexport default function App() { return <View><Text>Hello World</Text></View>; }\n";
-      files = buildReactNativeFiles(appName, safeAppName, rnCode);
+      const rnCode = project.react_native_code || "<h1>Hello World</h1><p>Your app content goes here.</p>";
+      files = buildKotlinAndroidFiles(appName, safeAppName, rnCode);
     } else {
       const rawCode = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
       // Normalize all dollar sign escaping in the Dart code
