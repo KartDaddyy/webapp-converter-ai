@@ -529,7 +529,11 @@ Deno.serve(async (req) => {
 
     const appName = project.analysis?.siteName || project.name || "app";
     const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-    const code = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
+    const rawCode = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
+
+    // Fix unescaped $ signs in Dart string literals (e.g. '$10' -> '\$10')
+    // Match $ not followed by { or a valid Dart identifier start, and not already escaped
+    const code = rawCode.replace(/(?<!\\)\$(?![{a-zA-Z_])/g, '\\$');
 
     const pubspec = `name: ${safeAppName}
 description: Generated Flutter app from ${project.url || "web"}
