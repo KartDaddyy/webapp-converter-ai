@@ -521,6 +521,7 @@ function buildReactNativeFiles(appName, safeAppName, code) {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
+    "build": "cd android && chmod +x gradlew && ./gradlew assembleDebug",
     "test": "jest",
     "lint": "eslint ."
   },
