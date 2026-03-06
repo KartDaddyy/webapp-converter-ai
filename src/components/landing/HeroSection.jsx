@@ -47,6 +47,30 @@ export default function HeroSection({ onSubmitUrl, isLoading }) {
           a production-ready Flutter app with native mobile UI — in minutes.
         </p>
 
+        {/* Framework Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="flex items-center justify-center gap-2 mb-5"
+        >
+          <span className="text-sm text-slate-500 font-medium">Framework:</span>
+          <button
+            type="button"
+            onClick={() => setFramework("flutter")}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${framework === "flutter" ? "bg-blue-600 text-white border-blue-600 shadow-md" : "bg-white text-slate-600 border-slate-200 hover:border-blue-400"}`}
+          >
+            Flutter
+          </button>
+          <button
+            type="button"
+            onClick={() => setFramework("react_native")}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-all ${framework === "react_native" ? "bg-violet-600 text-white border-violet-600 shadow-md" : "bg-white text-slate-600 border-slate-200 hover:border-violet-400"}`}
+          >
+            React Native
+          </button>
+        </motion.div>
+
         {/* URL Input */}
         <motion.form
           onSubmit={handleSubmit}
