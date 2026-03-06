@@ -469,9 +469,25 @@ NS_ASSUME_NONNULL_END
    </ArchiveAction>
 </Scheme>`;
 
+  const codemagicYaml = `workflows:
+  android-workflow:
+    name: Android Build
+    max_build_duration: 30
+    environment:
+      flutter: stable
+    scripts:
+      - name: Get packages
+        script: flutter pub get
+      - name: Build APK
+        script: flutter build apk --debug --android-skip-build-dependency-validation
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+`;
+
   return [
     { path: "lib/main.dart", content: code },
     { path: "pubspec.yaml", content: pubspec },
+    { path: "codemagic.yaml", content: codemagicYaml },
     { path: "android/app/src/main/AndroidManifest.xml", content: androidManifest },
     { path: "android/app/build.gradle", content: buildGradle },
     { path: "android/build.gradle", content: rootBuildGradle },
