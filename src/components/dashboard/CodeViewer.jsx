@@ -8,16 +8,16 @@ export default function CodeViewer({ code, rnCode, framework = "flutter" }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleCopy = async () => {
-    if (code) {
-      await navigator.clipboard.writeText(code);
+    if (activeCode) {
+      await navigator.clipboard.writeText(activeCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  if (!code) return null;
+  if (!activeCode) return null;
 
-  const displayCode = expanded ? code : code.slice(0, 1500) + (code.length > 1500 ? "\n\n// ... (click expand to see full code)" : "");
+  const displayCode = expanded ? activeCode : activeCode.slice(0, 1500) + (activeCode.length > 1500 ? "\n\n// ... (click expand to see full code)" : "");
 
   return (
     <div className="space-y-3">
