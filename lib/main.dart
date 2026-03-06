@@ -107,8 +107,8 @@ class PricingScreen extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           Card(child: ListTile(title: Text('Free Plan - Basic Features'))),
-          Card(child: ListTile(title: Text('Pro Plan - Advanced Features for \\$10/month'))),
-          Card(child: ListTile(title: Text('Business Plan - Custom Features for \\$30/month'))),
+          Card(child: ListTile(title: Text('Pro Plan - Advanced Features for \$10/month'))),
+          Card(child: ListTile(title: Text('Business Plan - Custom Features for \$30/month'))),
         ],
       ),
     );
