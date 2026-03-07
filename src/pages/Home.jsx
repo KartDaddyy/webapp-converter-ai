@@ -49,13 +49,12 @@ export default function Home() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmitUrl = async (url, framework = "flutter") => {
+  const handleSubmitUrl = async (url) => {
     setIsLoading(true);
     const project = await base44.entities.Project.create({
       url,
       name: new URL(url).hostname.replace("www.", ""),
       status: "analyzing",
-      framework,
     });
     navigate(createPageUrl("ProjectDashboard") + `?id=${project.id}`);
   };

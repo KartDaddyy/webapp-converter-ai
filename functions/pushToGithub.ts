@@ -728,20 +728,13 @@ Deno.serve(async (req) => {
 
     const appName = project.analysis?.siteName || project.name || "app";
     const safeAppName = appName.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-    const isRN = project.framework === "react_native";
 
-    let files;
+    const rawCode = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
+    // Normalize all dollar sign escaping in the Dart code
+    let code = rawCode.replace(/\\+\$/g, '$');
+    code = code.replace(/\$(?![{a-zA-Z_])/g, '\\$');
 
-    if (isRN) {
-      const rnCode = project.react_native_code || "<h1>Hello World</h1><p>Your app content goes here.</p>";
-      files = buildKotlinAndroidFiles(appName, safeAppName, rnCode);
-    } else {
-      const rawCode = project.flutter_code || "import 'package:flutter/material.dart';\nvoid main() => runApp(const MaterialApp(home: Scaffold(body: Center(child: Text('Hello World')))));\n";
-      // Normalize all dollar sign escaping in the Dart code
-      let code = rawCode.replace(/\\+\$/g, '$');
-      code = code.replace(/\$(?![{a-zA-Z_])/g, '\\$');
-
-      const pubspec = `name: ${safeAppName}
+    const pubspec = `name: ${safeAppName}
 description: Generated Flutter app from ${project.url || "web"}
 publish_to: 'none'
 version: 1.0.0+1
@@ -762,8 +755,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 `;
-      files = buildFlutterFiles(appName, safeAppName, code, pubspec);
-    }
+    const files = buildFlutterFiles(appName, safeAppName, code, pubspec);
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection("github");
     const ghHeaders = {
