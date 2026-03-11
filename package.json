@@ -12,7 +12,9 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.73.4",
-    "@react-native/typescript-config": "0.73.1"
+    "@react-native/typescript-config": "0.73.1",
+    "@base44/vite-plugin": "^1.0.0",
+    "@base44/sdk": "^0.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
