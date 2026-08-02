@@ -1,0 +1,86 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name"
+    },
+    "url": {
+      "type": "string",
+      "description": "Source website URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "analyzing",
+        "generating",
+        "preview",
+        "building",
+        "completed",
+        "failed"
+      ],
+      "default": "analyzing",
+      "description": "Current project status"
+    },
+    "analysis": {
+      "type": "object",
+      "description": "Website analysis results"
+    },
+    "features": {
+      "type": "array",
+      "description": "List of AI-added features",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "added_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "flutter_code": {
+      "type": "string",
+      "description": "Generated Flutter main.dart code"
+    },
+    "screens": {
+      "type": "array",
+      "description": "Generated screen list",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "build_status": {
+      "type": "object",
+      "description": "Build status for APK, AAB, iOS"
+    },
+    "app_icon_url": {
+      "type": "string",
+      "description": "Generated app icon URL"
+    },
+    "color_scheme": {
+      "type": "object",
+      "description": "Extracted color scheme from website"
+    }
+  },
+  "required": [
+    "url"
+  ]
+}
